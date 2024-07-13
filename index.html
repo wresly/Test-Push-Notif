@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <button onclick="enableNotif()" id="enableBtn" style="display: none;">Enable Notif</button>
+    <button onclick="disableNotif()" id="disableBtn" style="display: none;">Disable Notif</button>
+    <textarea name="" id="endpoint"></textarea>
+    <script>
+        navigator.serviceWorker.getRegistrations().then((arr) => {
+            if (arr.length > 0) {
+                document.getElementById('disableBtn').style.display = 'block';
+                return
+            }
+            document.getElementById('enableBtn').style.display = 'block';
+
+        })
+
+        const enableNotif = () => {
+            navigator.serviceWorker.register('sw.js')
+            Notification.requestPermission().then((permision) => {
+                if (permision === "granted") {
+                    navigator.serviceWorker.ready.then((sw) => {
+                        sw.pushManager.subscribe({
+                            userVisibleOnly: true,
+                            applicationServerKey: "BF9PyWAFpYSnmK8g03-XkfUY6OL3_Z3inIyErUrVfVrmlb8w3uQA4_HP0qQlW6k9F2deVVnbj1C6Wz2HGqBEN-I"
+                        }).then((subscription) => {
+                            document.getElementById('endpoint').innerHTML = JSON.stringify(subscription);
+                            console.log(JSON.stringify(subscription));
+                            // location.reload()
+                        });
+                    })
+
+                    return
+                }
+                alert("enable notification")
+                // location.reload()
+            })
+        }
+
+        const disableNotif = () => {
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+                for (const registration of registrations) {
+                    registration.unregister();
+                }
+            });
+            // location.reload()
+        }
+    </script>
+
+</body>
+
+</html>
